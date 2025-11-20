@@ -69,7 +69,8 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifactId = base.archivesName.get()
+                groupId = "com.github.CauaSCP"
+                artifactId = "klay-api"
                 from components.java
             }
         }
