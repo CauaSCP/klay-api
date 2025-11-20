@@ -70,7 +70,7 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 groupId = "com.github.CauaSCP"
-                artifactId = "klay-api"
+                artifactId = "klay-api-$project.name"
                 from components.java
             }
         }
