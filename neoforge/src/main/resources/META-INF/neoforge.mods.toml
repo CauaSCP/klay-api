@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[10,)"
+#issueTrackerURL = ""
+license = "Insert License Here"
+
+[[mods]]
+modId = "klay_api"
+version = "${version}"
+displayName = "KlayApi"
+authors = "Klayil"
+description = '''
+This is KlayApi in the Neoforge version.
+'''
+#logoFile = ""
+
+[[dependencies.klay_api]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.10,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.klay_api]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.10,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.klay_api]]
+modId = "architectury"
+type = "required"
+versionRange = "[18.0.6,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[mixins]]
+config = "klay_api.mixins.json"
