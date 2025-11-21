@@ -80,6 +80,12 @@ subprojects {
             maven {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/CauaSCP/klay-api")
+
+                credentials {
+                    // Use environment variables or local properties for authentication
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                }
             }
         }
     }

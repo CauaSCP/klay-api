@@ -23,67 +23,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class KlayApiModBlocks {
-    private static Map<String, DeferredRegister<Block>> KlayApiBlocksRegisters = new HashMap<>();
+    private static final Map<String, DeferredRegister<Block>> KlayApiBlocksRegisters = new HashMap<>();
     public static Map<String, RegistrySupplier<Block>> AllKlayApiBlocks = new HashMap<>();
 
     public static Map<ResourceKey<CreativeModeTab>, ArrayList<String>> blockItemCreativeModeTabs = new HashMap<>();
 
-
-    /// # CHANGABLE FUNCS
-    public static Function<String, DeferredRegister<Block>> _createBlocksRegisterValue;
-    public static DeferredRegister<Block> createBlocksRegister(String mod_id) {
-        return _createBlocksRegisterValue.apply(mod_id);
-    }
-
-
-    public static KlayApiModItems.CreateThingFunction<String, ResourceKey<CreativeModeTab>, BlockBehaviour.Properties, String, RegistrySupplier<Block>> _createBlockValue;
-    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, BlockBehaviour.Properties> propsFunction, String mod_id) {
-        BlockBehaviour.Properties properties = propsFunction.apply(name, mod_id);
-
-        return _createBlockValue.apply(name, creativeModeTab, properties, mod_id);
-    }
-    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, BlockBehaviour.Properties> propsFunction, String mod_id, boolean doesRequireToolForDrops) {
-        BlockBehaviour.Properties properties = propsFunction.apply(name, mod_id);
-
-        if (doesRequireToolForDrops) {
-            properties = properties.requiresCorrectToolForDrops();
-        }
-
-        return _createBlockValue.apply(name, creativeModeTab, properties, mod_id);
-    }
-
-    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, BlockBehaviour.Properties> propsFunction, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength) {
-        BlockBehaviour.Properties properties = propsFunction.apply(name, mod_id);
-
-        if (doesRequireToolForDrops) {
-            properties = properties.requiresCorrectToolForDrops();
-        }
-
-        properties.strength(destroyTimeStrength);
-
-        return  _createBlockValue.apply(name, creativeModeTab, properties, mod_id);
-    }
-
-    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, BlockBehaviour.Properties> propsFunction, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength, float explosionResistance) {
-        BlockBehaviour.Properties properties = propsFunction.apply(name, mod_id);
-
-        if (doesRequireToolForDrops) {
-            properties = properties.requiresCorrectToolForDrops();
-        }
-
-        properties.strength(destroyTimeStrength, explosionResistance);
-
-        return  _createBlockValue.apply(name, creativeModeTab, properties, mod_id);
-    }
-
-    public static BiFunction<String, String, BlockBehaviour.Properties> _basePropertiesValue;
-    public static BlockBehaviour.Properties baseProperties(String name, String mod_id) {
-        return  _basePropertiesValue.apply(name, mod_id);
-    }
-    /// #################
-
-
-    public static final DeferredRegister<Block> _createBlocksRegister(String mod_id) {
+    public static final DeferredRegister<Block> createBlocksRegister(String mod_id) {
         KlayApiBlocksRegisters.put(mod_id, DeferredRegister.create(mod_id, Registries.BLOCK));
 
         return KlayApiBlocksRegisters.get(mod_id);
@@ -101,22 +46,22 @@ public class KlayApiModBlocks {
         return AllKlayApiBlocks.get(blockLocation.toString());
     }
 
-    public static BlockBehaviour.Properties _baseProperties(String name, String mod_id) {
+    public static BlockBehaviour.Properties baseProperties(String name, String mod_id) {
         return BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(mod_id, name)));
     }
 
-    public static void _createBlockBefore(ResourceKey<CreativeModeTab> creativeModeTab, String mod_id, String name) {
+    private static void _createBlockBefore(ResourceKey<CreativeModeTab> creativeModeTab, String mod_id, String name) {
         if (!blockItemCreativeModeTabs.containsKey(creativeModeTab)) blockItemCreativeModeTabs.put(creativeModeTab, new ArrayList<>());
 
         blockItemCreativeModeTabs.get(creativeModeTab).add(ResourceLocation.fromNamespaceAndPath(mod_id, name).toString());
     }
-    public static RegistrySupplier<Block> _createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties properties, String mod_id) {
+    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties properties, String mod_id) {
         _createBlockBefore(creativeModeTab, mod_id, name);
 
         return registerBlock(name, () -> new Block(properties), mod_id);
     }
 
-    public static RegistrySupplier<Block> _createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops) {
+    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops) {
         _createBlockBefore(creativeModeTab, mod_id, name);
 
 //        BlockBehaviour.Properties _properties = propsFunction.apply(name, mod_id);
@@ -129,7 +74,7 @@ public class KlayApiModBlocks {
         return registerBlock(name, () -> new Block(properties), mod_id);
     }
 
-    public static RegistrySupplier<Block> _createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength) {
+    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength) {
         _createBlockBefore(creativeModeTab, mod_id, name);
 
 //        BlockBehaviour.Properties _properties = propsFunction.apply(name, mod_id);
@@ -142,7 +87,7 @@ public class KlayApiModBlocks {
         return registerBlock(name, () -> new Block(properties), mod_id);
     }
 
-    public static RegistrySupplier<Block> _createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength, float explosionResistance) {
+    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength, float explosionResistance) {
         _createBlockBefore(creativeModeTab, mod_id, name);
 
 //        BlockBehaviour.Properties _properties = propsFunction.apply(name, mod_id);
