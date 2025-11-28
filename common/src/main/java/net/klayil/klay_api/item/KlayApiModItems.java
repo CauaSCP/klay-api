@@ -13,13 +13,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.Nullable;
+//import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+//import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static net.klayil.klay_api.block.KlayApiModBlocks.AllKlayApiBlocks;
@@ -27,7 +27,7 @@ import static net.klayil.klay_api.block.KlayApiModBlocks.blockItemCreativeModeTa
 
 public class KlayApiModItems {
     private static final Map<String, DeferredRegister<Item>> KlayApiItemsRegisters = new HashMap<>();
-    private static final Map<String, RegistrySupplier<Item>> AllKlayApiItems = new HashMap<>();
+    public static final Map<String, RegistrySupplier<Item>> AllKlayApiItems = new HashMap<>();
 
     public static DeferredRegister<Item> createItemsRegister(String mod_id) {
         KlayApiItemsRegisters.put(mod_id, DeferredRegister.create(mod_id, Registries.ITEM));
@@ -74,9 +74,17 @@ public class KlayApiModItems {
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(mod_id, name)));
     }
 
-    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, Item.Properties> propsFunction, String mod_id) {
+    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, Item.Properties propsVal, String mod_id) {
 //        CreativeTabRegistry.append(creativeModeTab, item);
 
+        return registerItem(name, () -> new Item(propsVal.arch$tab(creativeModeTab)), mod_id);
+    }
+
+    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, String mod_id) {
+        return registerItem(name, () -> new Item(baseProperties(name, mod_id).arch$tab(creativeModeTab)), mod_id);
+    }
+
+    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, Item.Properties> propsFunction, String mod_id) {
         return registerItem(name, () -> new Item(propsFunction.apply(name, mod_id).arch$tab(creativeModeTab)), mod_id);
     }
 }
