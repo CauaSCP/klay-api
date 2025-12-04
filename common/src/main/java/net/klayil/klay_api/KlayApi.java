@@ -1,6 +1,5 @@
 package net.klayil.klay_api;
 
-import dev.architectury.platform.Platform;
 import net.klayil.klay_api.block.KlayApiModBlocks;
 import net.klayil.klay_api.item.KlayApiModItems;
 import net.klayil.klay_api.tabs.KlayApiModTabs;
