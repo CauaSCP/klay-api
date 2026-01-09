@@ -17,7 +17,7 @@ public final class KlayApi {
 
 //        isFabric = Platform.isFabric();
 
-        KlayApiModTabs.initTabs();
+//        KlayApiModTabs.initTabs();
 
         KlayApiModBlocks.initBlocks();
         KlayApiModItems.initItems();

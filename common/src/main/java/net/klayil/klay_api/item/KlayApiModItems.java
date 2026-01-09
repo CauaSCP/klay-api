@@ -2,6 +2,7 @@ package net.klayil.klay_api.item;
 
 //import dev.architectury.registry.CreativeTabRegistry;
 
+import dev.architectury.registry.CreativeTabRegistry;
 import net.klayil.klay_api.KlayApi;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 //import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,29 +38,50 @@ public class KlayApiModItems {
     }
 
 
+    static int masterIndex;
+    static ArrayList<int[]> toRemove;
+    static ArrayList<ResourceKey<CreativeModeTab>> keys;
     public static void initItems() {
+        while (true) {
+            try {
+                toRemove = new ArrayList<int[]>();
+                masterIndex = 0;
 
-        for ( ResourceKey<CreativeModeTab> curCreativeModeTab : blockItemCreativeModeTabs.keySet() ) {
+                for ( ResourceKey<CreativeModeTab> curCreativeModeTab : blockItemCreativeModeTabs.keySet() ) {
 //            KlayApi.LOGGER.info("@Size >> %d".formatted(blockItemCreativeModeTabs.get(curCreativeModeTab).size()));
 
-            if (blockItemCreativeModeTabs.get(curCreativeModeTab).isEmpty()) continue;
+                    if (blockItemCreativeModeTabs.get(curCreativeModeTab).isEmpty()) continue;
 
-            ArrayList<String> arr = blockItemCreativeModeTabs.get(curCreativeModeTab);
+                    ArrayList<String> arr = blockItemCreativeModeTabs.get(curCreativeModeTab);
 
-            for (int index = 0; index < arr.size(); index++) {
-                ResourceLocation itemLocation = ResourceLocation.parse( arr.get(index) );
+                    for (int index = 0; index < arr.size(); index++) {
+                        ResourceLocation itemLocation = ResourceLocation.parse( arr.get(index) );
 
 //                RegistrySupplier<Item> blockItem =
-                registerItem(itemLocation.getPath(), () -> new BlockItem(AllKlayApiBlocks.get(itemLocation.toString()).get(), baseProperties(itemLocation.getPath(), itemLocation.getNamespace()).arch$tab(curCreativeModeTab)), itemLocation.getNamespace());
+                        registerItem(itemLocation.getPath(), () -> new BlockItem(AllKlayApiBlocks.get(itemLocation.toString()).get(), baseProperties(itemLocation.getPath(), itemLocation.getNamespace()).arch$tab(curCreativeModeTab)), itemLocation.getNamespace());
+                        toRemove.add(new int[]{masterIndex, index});
 
 //                CreativeTabRegistry.append(curCreativeModeTab, blockItem);
 
-                KlayApi.LOGGER.info("@ITEM >> %s".formatted(itemLocation.toString()));
-            }
-        }
+                        KlayApi.LOGGER.info("@ITEM >> %s".formatted(itemLocation.toString()));
+                    }
+
+                    masterIndex++;
+                }
+
+                Thread.sleep(350);
+
+                for (int[] indexes : toRemove) {
+                    keys = new ArrayList<>(blockItemCreativeModeTabs.keySet());
+                    blockItemCreativeModeTabs.get(keys.get(indexes[0])).remove(indexes[1]);
+                }
 //        }
 
 //        KlayApi.LOGGER.info("isFabric: %s".formatted(KlayApi.isFabric));
+            } catch (InterruptedException e) {
+
+            }
+        }
     }
 
     private static RegistrySupplier<Item> registerItem(String itemName, Supplier<Item> item, String mod_id) {
@@ -74,17 +97,37 @@ public class KlayApiModItems {
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(mod_id, name)));
     }
 
-    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, Item.Properties propsVal, String mod_id) {
-//        CreativeTabRegistry.append(creativeModeTab, item);
+    public static RegistrySupplier<Item> createItem(String name, @Nullable ResourceKey<CreativeModeTab> creativeModeTab, Supplier<Item.Properties> propsSupplier, String mod_id) {
+        return registerItem(name, () -> {
+            Item.Properties properties = propsSupplier.get();
 
-        return registerItem(name, () -> new Item(propsVal.arch$tab(creativeModeTab)), mod_id);
+            Item item = new Item(properties);
+
+            if (creativeModeTab != null) {
+                CreativeTabRegistry.append(creativeModeTab, item);
+            }
+
+            return item;
+        }, mod_id);
     }
 
-    public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, String mod_id) {
-        return registerItem(name, () -> new Item(baseProperties(name, mod_id).arch$tab(creativeModeTab)), mod_id);
+    public static RegistrySupplier<Item> createItem(String name, @Nullable ResourceKey<CreativeModeTab> creativeModeTab, String mod_id) {
+        RegistrySupplier<Item> item = registerItem(name, () -> new Item(baseProperties(name, mod_id)), mod_id);
+
+        if (creativeModeTab != null) {
+            CreativeTabRegistry.append(creativeModeTab, item);
+        }
+
+        return item;
     }
 
     public static RegistrySupplier<Item> createItem(String name, ResourceKey<CreativeModeTab> creativeModeTab, BiFunction<String, String, Item.Properties> propsFunction, String mod_id) {
-        return registerItem(name, () -> new Item(propsFunction.apply(name, mod_id).arch$tab(creativeModeTab)), mod_id);
+        RegistrySupplier<Item> item = registerItem(name, () -> new Item(propsFunction.apply(name, mod_id)), mod_id);
+
+        if (creativeModeTab != null) {
+            CreativeTabRegistry.append(creativeModeTab, item);
+        }
+
+        return item;
     }
 }
