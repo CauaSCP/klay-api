@@ -20,9 +20,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 //import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 import static net.klayil.klay_api.block.KlayApiModBlocks.AllKlayApiBlocks;
 import static net.klayil.klay_api.block.KlayApiModBlocks.blockItemCreativeModeTabs;
@@ -42,46 +46,42 @@ public class KlayApiModItems {
     static ArrayList<int[]> toRemove;
     static ArrayList<ResourceKey<CreativeModeTab>> keys;
     public static void initItems() {
-        while (true) {
-            try {
-                toRemove = new ArrayList<int[]>();
-                masterIndex = 0;
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-                for ( ResourceKey<CreativeModeTab> curCreativeModeTab : blockItemCreativeModeTabs.keySet() ) {
+        Runnable task = () -> {
+            toRemove = new ArrayList<>();
+            masterIndex = 0;
+
+            for ( ResourceKey<CreativeModeTab> curCreativeModeTab : blockItemCreativeModeTabs.keySet() ) {
 //            KlayApi.LOGGER.info("@Size >> %d".formatted(blockItemCreativeModeTabs.get(curCreativeModeTab).size()));
 
-                    if (blockItemCreativeModeTabs.get(curCreativeModeTab).isEmpty()) continue;
+                if (blockItemCreativeModeTabs.get(curCreativeModeTab).isEmpty()) continue;
 
-                    ArrayList<String> arr = blockItemCreativeModeTabs.get(curCreativeModeTab);
+                ArrayList<String> arr = blockItemCreativeModeTabs.get(curCreativeModeTab);
 
-                    for (int index = 0; index < arr.size(); index++) {
-                        ResourceLocation itemLocation = ResourceLocation.parse( arr.get(index) );
+                for (int index = 0; index < arr.size(); index++) {
+                    ResourceLocation itemLocation = ResourceLocation.parse( arr.get(index) );
 
 //                RegistrySupplier<Item> blockItem =
-                        registerItem(itemLocation.getPath(), () -> new BlockItem(AllKlayApiBlocks.get(itemLocation.toString()).get(), baseProperties(itemLocation.getPath(), itemLocation.getNamespace()).arch$tab(curCreativeModeTab)), itemLocation.getNamespace());
-                        toRemove.add(new int[]{masterIndex, index});
+                    toRemove.add(new int[]{masterIndex, index});
 
 //                CreativeTabRegistry.append(curCreativeModeTab, blockItem);
 
-                        KlayApi.LOGGER.info("@ITEM >> %s".formatted(itemLocation.toString()));
-                    }
-
-                    masterIndex++;
+                    KlayApi.LOGGER.info("@ITEM >> %s".formatted(itemLocation.toString()));
                 }
 
-                Thread.sleep(350);
+                masterIndex++;
+            }
 
+            if (!toRemove.isEmpty()) {
                 for (int[] indexes : toRemove) {
                     keys = new ArrayList<>(blockItemCreativeModeTabs.keySet());
                     blockItemCreativeModeTabs.get(keys.get(indexes[0])).remove(indexes[1]);
                 }
-//        }
-
-//        KlayApi.LOGGER.info("isFabric: %s".formatted(KlayApi.isFabric));
-            } catch (InterruptedException e) {
-
             }
-        }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 750, TimeUnit.MILLISECONDS);
     }
 
     private static RegistrySupplier<Item> registerItem(String itemName, Supplier<Item> item, String mod_id) {
