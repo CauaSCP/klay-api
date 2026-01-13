@@ -1,5 +1,6 @@
 package net.klayil.klay_api.block;
 
+import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 //import net.klayil.klay_api.KlayApi;
@@ -9,11 +10,14 @@ import net.klayil.klay_api.item.KlayApiModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 //import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +25,8 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import net.minecraft.world.item.Items;
 
 public class KlayApiModBlocks {
     private static final Map<String, DeferredRegister<Block>> KlayApiBlocksRegisters = new HashMap<>();
@@ -87,7 +93,7 @@ public class KlayApiModBlocks {
         return registerBlock(name, () -> new Block(properties), mod_id);
     }
 
-    public static RegistrySupplier<Block> createBlock(String name, ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength, float explosionResistance) {
+    public static RegistrySupplier<Block> createBlock(String name, @Nullable ResourceKey<CreativeModeTab> creativeModeTab, BlockBehaviour.Properties _properties, String mod_id, boolean doesRequireToolForDrops, float destroyTimeStrength, float explosionResistance) {
         _createBlockBefore(creativeModeTab, mod_id, name);
 
 //        BlockBehaviour.Properties _properties = propsFunction.apply(name, mod_id);
